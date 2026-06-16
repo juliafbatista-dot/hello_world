@@ -62,19 +62,11 @@ class _MyAppState extends State<TemaApp> {
   // - - - - - - - Função para carregar tema - - - - - - -
   Future<void> carregarTema() async {
     final prefs = await SharedPreferences.getInstance();
+    bool? temaSalvo = prefs.getBool('temaEscuro');
     setState(() {
-      isDarkTheme = prefs.getBool('temaEscuro') ?? false;
+      isDarkTheme = temaSalvo ?? false;
     });
   }
-//
-//
-//
-//
-//
-//
-//
-//
-//
 //
 //
   @override
