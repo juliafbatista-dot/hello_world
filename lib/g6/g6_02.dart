@@ -19,9 +19,11 @@ class TemaApp extends StatefulWidget {
 
 
 
+
   @override
   State<TemaApp> createState() => _MyAppState();
 }
+
 
 
 
@@ -37,6 +39,7 @@ class _MyAppState extends State<TemaApp> {
 
 
 
+
   @override
   void initState() {
     super.initState();
@@ -47,18 +50,22 @@ class _MyAppState extends State<TemaApp> {
   }
 
 
-
-
   // - - - - - - - Função para salvar o tema - - - - - - -
-//
-//
-//
-//
-//
+  Future<void> salvarTema(bool valor) async {
+    final prefs = await SharedPreferences.getInstance();
+    
+    await prefs.setBool('temaEscuro', valor);
+  }
 //
 //
 //
   // - - - - - - - Função para carregar tema - - - - - - -
+  Future<void> carregarTema() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      isDarkTheme = prefs.getBool('temaEscuro') ?? false;
+    });
+  }
 //
 //
 //
@@ -96,25 +103,16 @@ class _MyAppState extends State<TemaApp> {
             mainAxisAlignment: MainAxisAlignment.start,
 
 
-
-
             children: [
               // Texto mostrando o tema atual
               Text(
                 isDarkTheme ? "Tema Escuro" : "Tema Claro",
 
-
-
-
                 style: const TextStyle(fontSize: 24),
               ),
 
 
-
-
               const SizedBox(height: 20),
-
-
 
 
               Row(
@@ -125,8 +123,6 @@ class _MyAppState extends State<TemaApp> {
                     icon: const Icon(Icons.wb_sunny, size: 40),
 
 
-
-
                     onPressed: () {
                       // Atualiza a tela
                       setState(() {
@@ -135,19 +131,13 @@ class _MyAppState extends State<TemaApp> {
                       });
 
 
-
-
                       // Salva o tema claro
                       salvarTema(false);
                     },
                   ),
 
 
-
-
                   const SizedBox(width: 10),
-
-
 
 
                   // SWITCH
