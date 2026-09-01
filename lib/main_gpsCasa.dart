@@ -2,18 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MeuApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class MeuApp extends StatelessWidget {
+  const MeuApp({super.key});
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Minha localização',
-      home: LocalizacaoPage(),
+      home: const LocalizacaoPage(),
     );
   }
 }
@@ -28,61 +27,100 @@ class LocalizacaoPage extends StatefulWidget {
 class _LocalizacaoPageState extends State<LocalizacaoPage> {
   double latitude = 0;
   double longitude = 0;
+  static const latcasa = -21.461379;
+  static const loncasa = -47.018072;
+  double? distanciakm;
 
   Future<void> buscarLocalizacao() async {
     bool servicoAtivo = await Geolocator.isLocationServiceEnabled();
+
     if (!servicoAtivo) {
       await Geolocator.openLocationSettings();
       return;
     }
 
     LocationPermission permissao = await Geolocator.checkPermission();
+
     if (permissao == LocationPermission.denied) {
       permissao = await Geolocator.requestPermission();
     }
 
-    if (permissao == LocationPermission.denied || permissao == LocationPermission.deniedForever) {
+    if (permissao == LocationPermission.denied ||
+        permissao == LocationPermission.deniedForever) {
       return;
     }
-
     Position posicao = await Geolocator.getCurrentPosition();
+
+    double distancia = Geolocator.distanceBetween(
+      posicao.latitude,
+      posicao.longitude,
+      latcasa,
+      loncasa,
+    );
+
     setState(() {
       latitude = posicao.latitude;
       longitude = posicao.longitude;
+      distanciakm = distancia;
     });
 
     print('Latitude: $latitude');
     print('Longitude: $longitude');
+    print('Distância até em casa: $distanciakm km');
+  }
+
+  String get distanciaFormatada {
+    if (distanciakm == null) return '';
+    if (distanciakm! < 1000) {
+      return '$distanciakm!.toStringFixed(0) km';
+    }
+    return '${(distanciakm! / 1000).toStringAsFixed(2)} km';
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Minha Localizacao')),
+      appBar: AppBar(title: const Text("Minha localização")),
+
       body: Center(
-        child: Padding( // CORRIGIDO: adicionado o parêntese e removido o "padding:" duplicado
+        child: Padding(
           padding: const EdgeInsets.all(20),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
+
             children: [
-              const Icon(Icons.location_on, size: 80, color: Colors.red),
-              const SizedBox(height: 20), // CORRIGIDO: "SizedBox" com S maiúsculo
+              const Icon(Icons.house, size: 80, color: Colors.blue),
+
+              const SizedBox(height: 20),
+
               const Text(
                 'Localização atual',
                 style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
               ),
+
               const SizedBox(height: 30),
+
               Text('Latitude: $latitude', style: const TextStyle(fontSize: 18)),
+
               const SizedBox(height: 10),
+
               Text(
                 'Longitude: $longitude',
+
                 style: const TextStyle(fontSize: 18),
               ),
               const SizedBox(height: 30),
+               
+               Text(
+                'distância $distanciaFormatada',
+               ),
+
+              const SizedBox(height: 30),
+
               ElevatedButton(
                 onPressed: buscarLocalizacao,
-                child: const Text('Atualizar localização'),
+                child: const Text('Calcular localização'),
               ),
             ],
           ),

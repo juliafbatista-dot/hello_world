@@ -1,7 +1,6 @@
-import 'package:flutter/material.dart'; //25/08/2026
-import 'package:geolocator/geolocator.dart'; //25/08/2026
+import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 
-//Run|Debug|Profile
 void main() {
   runApp(const MyApp());
 }
@@ -11,10 +10,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Minha localização',
-      home: const LocalizacaoPage(),
+      home: LocalizacaoPage(),
     );
   }
 }
@@ -32,25 +31,21 @@ class _LocalizacaoPageState extends State<LocalizacaoPage> {
 
   Future<void> buscarLocalizacao() async {
     bool servicoAtivo = await Geolocator.isLocationServiceEnabled();
-
     if (!servicoAtivo) {
       await Geolocator.openLocationSettings();
       return;
     }
 
     LocationPermission permissao = await Geolocator.checkPermission();
-
     if (permissao == LocationPermission.denied) {
       permissao = await Geolocator.requestPermission();
     }
 
-    if (permissao == LocationPermission.denied ||
-        permissao == LocationPermission.deniedForever) {
+    if (permissao == LocationPermission.denied || permissao == LocationPermission.deniedForever) {
       return;
     }
 
     Position posicao = await Geolocator.getCurrentPosition();
-
     setState(() {
       latitude = posicao.latitude;
       longitude = posicao.longitude;
@@ -64,34 +59,35 @@ class _LocalizacaoPageState extends State<LocalizacaoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Minha Localizacao')),
-
       body: Center(
-        child: Padding
-         Padding: const EdgeInsets.all(20),
-         child: Column (
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-
-          children: [
-            const Icon(Icons.location_on, size: 80, color: Colors.red),
-
-            const SizedBox(height: 20),
-
-            const Text(
-              'Localização atual',)
-            
-            const Icon(Icons.location_on, size: 80, color: Colors.red),
-            
-            const SizedBox(height: 20),
-
-            const Text(
-              'Localização atual',
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            )
-          
-          ]
-          
-         )
-        )
-       )
-    )
+        child: Padding( // CORRIGIDO: adicionado o parêntese e removido o "padding:" duplicado
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              const Icon(Icons.location_on, size: 80, color: Colors.red),
+              const SizedBox(height: 20), // CORRIGIDO: "SizedBox" com S maiúsculo
+              const Text(
+                'Localização atual',
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 30),
+              Text('Latitude: $latitude', style: const TextStyle(fontSize: 18)),
+              const SizedBox(height: 10),
+              Text(
+                'Longitude: $longitude',
+                style: const TextStyle(fontSize: 18),
+              ),
+              const SizedBox(height: 30),
+              ElevatedButton(
+                onPressed: buscarLocalizacao,
+                child: const Text('Atualizar localização'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
